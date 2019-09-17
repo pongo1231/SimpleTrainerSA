@@ -1,5 +1,6 @@
 #include "PlayerMenu.h"
 #include "../Memory.h"
+#include "../Loop.h"
 
 PlayerMenu* _PlayerMenu = nullptr;
 
@@ -15,5 +16,9 @@ PlayerMenu* PlayerMenu::GetInstance()
 
 void PlayerMenu::_Tick()
 {
-	AddCallbackOption("Suicide", []() { *(float*)(Memory::GetPlayerPedBaseAddr() + 1344) = 0.f; });
+	Loop* loop = Loop::GetInstance();
+
+	AddCallbackOption(loop->Loop_Invincibility ? "Disable Invincibility" : "Enable Invincibility",
+		[loop]() { loop->Loop_Invincibility = !loop->Loop_Invincibility; });
+	AddCallbackOption("Suicide", []() { Memory::SetPlayerHealth(0.f); });
 }

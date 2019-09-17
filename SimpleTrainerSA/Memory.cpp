@@ -2,6 +2,7 @@
 #include "Drawing.h"
 #include "Menus/Menu.h"
 #include "Logging.h"
+#include "Loop.h"
 #include "minhook/MinHook.h"
 #include <iostream>
 #include <fstream>
@@ -14,6 +15,7 @@ DWORD Memory::End;
 IDirect3D9* Memory::_D3d9;
 IDirect3DDevice9* Memory::_D3d9Device;
 HWND* Memory::_Hwnd;
+bool Memory::_Ready = false;
 
 int(__stdcall* _ShowCursor)(BOOL bShow);
 
@@ -22,39 +24,39 @@ HRESULT(__stdcall* Orig_EndScene)(IDirect3DDevice9* device);
 HRESULT(__stdcall* Orig_Reset)(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
 int(__stdcall* Orig_WindowProc)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-DWORD* GameLoadState;
-bool Ready = false;
-bool* IsInPause;
+DWORD* _GameLoadState;
+bool* _IsInPause;
 
-HRESULT __stdcall Hook_BeginScene(IDirect3DDevice9* device)
+HRESULT __stdcall Memory::Hook_BeginScene(IDirect3DDevice9* device)
 {
 	return Orig_BeginScene(device);
 }
 
-HRESULT __stdcall Hook_EndScene(IDirect3DDevice9* device)
+HRESULT __stdcall Memory::Hook_EndScene(IDirect3DDevice9* device)
 {
-	if (*GameLoadState == 9 && !*IsInPause)
+	if (*_GameLoadState == 9 && !*_IsInPause)
 	{
-		if (!Ready)
+		if (!_Ready)
 		{
 			Logging::Log << "Game loaded in, time to start drawing" << std::endl;
-			Ready = true;
+			_Ready = true;
 		}
 
 		Drawing::NewFrame();
+		Loop::GetInstance()->Tick();
 	}
 
 	return Orig_EndScene(device);
 }
 
-HRESULT __stdcall Hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters)
+HRESULT __stdcall Memory::Hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
 	return Orig_Reset(device, pPresentationParameters);
 }
 
-int __stdcall Hook_WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+int __stdcall Memory::Hook_WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Ready)
+	if (_Ready)
 	{
 		static bool OnHold = false;
 
@@ -159,14 +161,14 @@ void Memory::Init()
 	addr = Memory::FindPattern("\xE8\x00\x00\x00\x00\x8B\xF8\x89\x7D\x94", "x????xxxxx");
 	addr += 5 + *(DWORD*)(addr + 1);
 	addr += 0x5F5;
-	GameLoadState = *(DWORD**)(addr + 2);
-	Logging::Log << "Found Game Load State flag: " << GameLoadState << std::endl;
+	_GameLoadState = *(DWORD**)(addr + 2);
+	Logging::Log << "Found Game Load State flag: " << _GameLoadState << std::endl;
 	Logging::Log << "Skipping intro sequence" << std::endl;
 	_SkipIntroSequence();
 
 	addr = Memory::FindPattern("\x75\x28\x88\x0D\x00\x00\x00\x00", "xxxx????");
-	IsInPause = *(bool**)(addr + 4);
-	Logging::Log << "Found Pause flag: " << IsInPause << std::endl;
+	_IsInPause = *(bool**)(addr + 4);
+	Logging::Log << "Found Pause flag: " << _IsInPause << std::endl;
 
 	addr = Memory::FindPattern("\xFF\x15\x00\x00\x00\x00\xBB\x00\x00\x00\x00", "xx????x????");
 	_ShowCursor = *(int(__stdcall**)(BOOL))(addr + 3);
@@ -227,16 +229,21 @@ DWORD Memory::FindPattern(const char* pattern, const char* mask)
 
 void Memory::_SkipIntroSequence()
 {
-	if (*GameLoadState < 3)
+	if (*_GameLoadState < 3)
 	{
-		*GameLoadState = 3;
+		*_GameLoadState = 3;
 	}
-	while (*GameLoadState != 4)
+	while (*_GameLoadState != 4)
 	{
 		Sleep(100);
 	}
-	if (*GameLoadState == 4)
+	if (*_GameLoadState == 4)
 	{
-		*GameLoadState = 5;
+		*_GameLoadState = 5;
 	}
+}
+
+void Memory::SetPlayerHealth(float health)
+{
+	*(float*)(GetPlayerPedBaseAddr() + 1344) = health;
 }

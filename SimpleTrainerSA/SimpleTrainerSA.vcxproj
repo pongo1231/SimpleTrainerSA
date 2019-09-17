@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Loop.h" />
     <ClInclude Include="Menus\CreditsMenu.h" />
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="Logging.h" />
@@ -150,6 +151,7 @@
     <Library Include="minhook\libMinHook.x86.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Loop.cpp" />
     <ClCompile Include="Menus\CreditsMenu.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Drawing.cpp" />
