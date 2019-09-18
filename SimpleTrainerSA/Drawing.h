@@ -40,6 +40,7 @@ class Drawing
 {
 public:
 	static void NewFrame();
+	static void Reset();
 	static void DrawText(std::string label, float x, float y, UINT height, UINT width, ARGB color, UINT frames = 1);
 	static void DrawText(std::string label, float x, float y, LPD3DXFONT font, ARGB color, UINT frames = 1);
 

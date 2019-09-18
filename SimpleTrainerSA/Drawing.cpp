@@ -47,6 +47,19 @@ void Drawing::NewFrame()
 	}
 }
 
+void Drawing::Reset()
+{
+	for (int i = 0; i < MAX_TEXTS; i++)
+	{
+		auto*& text = _ToDrawTexts[i];
+		if (text)
+		{
+			delete text;
+			text = nullptr;
+		}
+	}
+}
+
 void Drawing::DrawText(std::string label, float x, float y, UINT height, UINT width, ARGB color, UINT frames)
 {
 	if (!label.empty() && x >= 0.f && x <= 1.f && y >= 0.f && y <= 1.f && frames > 0)

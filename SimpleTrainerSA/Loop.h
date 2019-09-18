@@ -10,6 +10,7 @@ private:
 
 public:
 	bool Loop_Invincibility = false;
+	bool Loop_ShowFPS = false;
 
 	void Tick();
 };

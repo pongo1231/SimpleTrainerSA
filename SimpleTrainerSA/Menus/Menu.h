@@ -17,6 +17,7 @@ class Menu
 {
 public:
 	static bool SendInput(int key);
+	static void ClearCachedFonts();
 
 	static inline Menu* GetCurrentMenu()
 	{
@@ -46,10 +47,11 @@ private:
 	};
 
 	std::string _Title;
-	Option* _Items[MAX_ITEMS];
+	Option* _Items[MAX_ITEMS] = { nullptr };
 	int _ItemsSize;
 	int _SelectedItemIndex;
 
+	void _CheckFontCache();
 	void _FreeItems();
 
 	virtual void _Tick() = 0;

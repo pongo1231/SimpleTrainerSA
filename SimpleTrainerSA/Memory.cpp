@@ -51,6 +51,9 @@ HRESULT __stdcall Memory::Hook_EndScene(IDirect3DDevice9* device)
 
 HRESULT __stdcall Memory::Hook_Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
+	Drawing::Reset();
+	Menu::ClearCachedFonts();
+
 	return Orig_Reset(device, pPresentationParameters);
 }
 
@@ -200,6 +203,7 @@ void Memory::Init()
 	}
 
 	MH_EnableHook(MH_ALL_HOOKS);
+
 	Logging::Log << "Init done!" << std::endl;
 }
 
@@ -241,9 +245,4 @@ void Memory::_SkipIntroSequence()
 	{
 		*_GameLoadState = 5;
 	}
-}
-
-void Memory::SetPlayerHealth(float health)
-{
-	*(float*)(GetPlayerPedBaseAddr() + 1344) = health;
 }

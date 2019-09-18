@@ -45,6 +45,9 @@
     <ClInclude Include="Loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Menus\SettingsMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="minhook\libMinHook.x86.lib" />
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Menus\SettingsMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

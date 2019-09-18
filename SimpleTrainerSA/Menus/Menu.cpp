@@ -7,16 +7,9 @@ std::stack<Menu*> Menu::_OpenMenuStack;
 LPD3DXFONT _CachedFontTitle = nullptr;
 LPD3DXFONT _CachedFontItem = nullptr;
 
-Menu::Menu(std::string title) : _Title(title), _SelectedItemIndex(0)
+Menu::Menu(std::string title) : _Title(title), _SelectedItemIndex(0), _ItemsSize(0)
 {
-	if (!_CachedFontTitle && !_CachedFontItem)
-	{
-		auto device = Memory::GetD3D9Device();
-		D3DXCreateFont(Memory::GetD3D9Device(), 30, 20, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Arial", &_CachedFontTitle);
-		D3DXCreateFont(Memory::GetD3D9Device(), 20, 10, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Arial", &_CachedFontItem);
-	}
+	_CheckFontCache();
 }
 
 Menu::~Menu()
@@ -46,6 +39,8 @@ void Menu::Tick()
 {
 	_FreeItems();
 	_Tick();
+
+	_CheckFontCache();
 
 	Drawing::DrawText(_Title, .05f, .05f, _CachedFontTitle, { 255, 255, 255, 255 });
 
@@ -115,6 +110,35 @@ bool Menu::SendInput(int key)
 	}
 
 	return false;
+}
+
+void Menu::_CheckFontCache()
+{
+	auto device = Memory::GetD3D9Device();
+	if (!_CachedFontTitle)
+	{
+		D3DXCreateFont(device, 30, 20, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE, "Arial", &_CachedFontTitle);
+	}
+	if (!_CachedFontItem)
+	{
+		D3DXCreateFont(device, 20, 10, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE, "Arial", &_CachedFontItem);
+	}
+}
+
+void Menu::ClearCachedFonts()
+{
+	if (_CachedFontTitle)
+	{
+		_CachedFontTitle->Release();
+		_CachedFontTitle = nullptr;
+	}
+	if (_CachedFontItem)
+	{
+		_CachedFontItem->Release();
+		_CachedFontItem = nullptr;
+	}
 }
 
 void Menu::_FreeItems()

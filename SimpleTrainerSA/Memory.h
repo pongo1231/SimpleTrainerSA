@@ -23,7 +23,7 @@ public:
 	{
 		return _Hwnd;
 	}
-	static inline DWORD GetPlayerPedBaseAddr()
+	static inline DWORD PlayerPedBaseAddr()
 	{
 		static DWORD addr = 0;
 		if (!addr)
@@ -34,14 +34,37 @@ public:
 
 		return ((int(__cdecl*)(int))addr)(-1);
 	}
-	static void SetPlayerHealth(float health);
-	static inline float GetPlayerHealth()
+	static inline float* PlayerHealthAddr()
 	{
-		return *(float*)(GetPlayerPedBaseAddr() + 1344);
+		return (float*)(PlayerPedBaseAddr() + 1344);
 	}
 	static inline bool IsReady()
 	{
 		return _Ready;
+	}
+	static inline float* PlayerMaxHealthAddr()
+	{
+		static DWORD addr = 0;
+		if (!addr)
+		{
+			addr = FindPattern("\xF3\xAB\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xE8", "xxxx????????x");
+			addr = *(DWORD*)(addr + 4);
+		}
+
+		return (float*)addr;
+	}
+	static inline float* PlayerArmorAddr()
+	{
+		static DWORD addr = 0;
+		if (!addr)
+		{
+			addr = FindPattern("\xE8\x00\x00\x00\x00\x83\xC4\x18\x8B\x74\x24\x18", "x????xxxxxxx");
+			addr += 5 + *(DWORD*)(addr + 1);
+			addr = *(DWORD*)(addr + 0x25 + 2);
+			addr = *(DWORD*)(addr + 100 * **(BYTE**)(FindPattern("\x8A\x1D\x00\x00\x00\x00\x33\xD2", "xx????xx") + 2)) + 1352;
+		}
+
+		return (float*)addr;
 	}
 
 private:

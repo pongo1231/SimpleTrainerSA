@@ -146,6 +146,7 @@
     <ClInclude Include="Menus\Menu.h" />
     <ClInclude Include="minhook\MinHook.h" />
     <ClInclude Include="Menus\PlayerMenu.h" />
+    <ClInclude Include="Menus\SettingsMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="minhook\libMinHook.x86.lib" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Menus\Menu.cpp" />
     <ClCompile Include="Menus\PlayerMenu.cpp" />
+    <ClCompile Include="Menus\SettingsMenu.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
