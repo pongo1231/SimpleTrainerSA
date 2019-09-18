@@ -66,6 +66,17 @@ public:
 
 		return (float*)addr;
 	}
+	static inline int* PlayerWantedLevelAddr()
+	{
+		static DWORD addr = 0;
+		if (!addr)
+		{
+			addr = FindPattern("\xE8\x00\x00\x00\x00\x8A\x50\x18", "x????xxx");
+			addr += 5 + *(DWORD*)(addr + 1);
+		}
+
+		return (int*)(((int(__cdecl*)(int))addr)(-1) + 44);
+	}
 
 private:
 	static IDirect3D9* _D3d9;

@@ -25,5 +25,7 @@ void PlayerMenu::_Tick()
 	AddCallbackOption("Suicide", []() { *Memory::PlayerHealthAddr() = 0.f; });
 	AddCallbackOption(*Memory::PlayerMaxHealthAddr() != 1000.f ? "Max Health" : "Reset Max Health",
 		[]() { *Memory::PlayerMaxHealthAddr() = *Memory::PlayerMaxHealthAddr() != 1000.f ? 1000.f : 569.f; });
-
+	AddCallbackOption("Clear Wanted Level (Bugged)", []() { *Memory::PlayerWantedLevelAddr() = 0; });
+	AddCallbackOption("Increase Wanted Level (Bugged)", []() { if (++*Memory::PlayerWantedLevelAddr() >= 7) *Memory::PlayerWantedLevelAddr() = 6; });
+	AddCallbackOption("Decrease Wanted Level (Bugged)", []() { if (--*Memory::PlayerWantedLevelAddr() <= -1)* Memory::PlayerWantedLevelAddr() = 0; });
 }
