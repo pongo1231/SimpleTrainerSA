@@ -7,7 +7,7 @@ public:
 	static SettingsMenu* GetInstance();
 
 private:
-	SettingsMenu() : Menu("Player Menu") {}
+	SettingsMenu() : Menu("Settings") {}
 
 private:
 	virtual void _Tick();

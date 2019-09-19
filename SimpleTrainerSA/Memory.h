@@ -56,15 +56,16 @@ public:
 	static inline float* PlayerArmorAddr()
 	{
 		static DWORD addr = 0;
-		if (!addr)
+		static DWORD addr2 = 0;
+		if (!addr || !addr2)
 		{
 			addr = FindPattern("\xE8\x00\x00\x00\x00\x83\xC4\x18\x8B\x74\x24\x18", "x????xxxxxxx");
 			addr += 5 + *(DWORD*)(addr + 1);
 			addr = *(DWORD*)(addr + 0x25 + 2);
-			addr = *(DWORD*)(addr + 100 * **(BYTE**)(FindPattern("\x8A\x1D\x00\x00\x00\x00\x33\xD2", "xx????xx") + 2)) + 1352;
+			addr2 = FindPattern("\x8A\x1D\x00\x00\x00\x00\x33\xD2", "xx????xx") + 2;
 		}
 
-		return (float*)addr;
+		return (float*)(*(DWORD*)(addr + 100 * **(BYTE**)(addr2)) + 1352);
 	}
 	static inline int* PlayerWantedLevelAddr()
 	{
